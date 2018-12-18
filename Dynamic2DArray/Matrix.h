@@ -112,9 +112,9 @@ public:
 	{
 		assert(a.nCols == b.nRows);
 		Matrix result( a.nRows, b.nCols );
-		for (int i = 0; i < a.nRows; i++)
+		for (int i = 0; i < result.nRows; i++)
 		{
-			for (int j = 0; j < b.nCols; j++)
+			for (int j = 0; j < result.nCols; j++)
 			{
 				float sum = 0.0f;
 				for (int k = 0; k < a.nCols; k++)
@@ -158,22 +158,28 @@ public:
 	}
 	Matrix& DotProduct(const Matrix& m)
 	{
-		assert(nRows == m.nCols);
-
-		Matrix temp = *this;
-		for (int j = 0; j < nRows; j++)
+		assert(nCols == m.nRows);
+		Matrix temp(nRows, m.nCols);
+		for (int i = 0; i < temp.nRows; i++)
 		{
-			for (int k = 0; k < nCols; k++)
+			for (int j = 0; j < temp.nCols; j++)
 			{
 				float sum = 0.0f;
-				for (int i = 0; i < m.nCols; i++)
+				for (int k = 0; k < nCols; k++)
 				{
-					sum += data[j][i] * m.data[i][k];
+					sum += data[i][k] * m.data[k][j];
 				}
-				temp.data[j][k] = sum;
+				temp.data[i][j] = sum;
 			}
 		}
 		return *this = temp;
+
+		/*
+			notes:
+			always reading data from a as row matrix
+			always reading data from b as column matrix
+			always returns a row matrix
+		*/
 	}
 	// operator overloading
 	Matrix& operator = (const Matrix& in)
@@ -210,6 +216,43 @@ public:
 			}
 		}
 		return out;
+	}
+
+	Matrix Transpose() const
+	{
+		Matrix result(nCols, nRows);
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				result.data[j][i] = data[i][j];
+			}
+		}
+		return result;
+	}
+	Matrix& Transpose()
+	{
+		Matrix temp(nCols, nRows);
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				temp.data[j][i] = data[i][j];
+			}
+		}
+		return *this = temp;
+	}
+	static Matrix Transpose( const Matrix& m )
+	{
+		Matrix result(m.nCols, m.nRows);
+		for (int i = 0; i < m.nRows; i++)
+		{
+			for (int j = 0; j < m.nCols; j++)
+			{
+				result.data[j][i] = m.data[i][j];
+			}
+		}
+		return result;
 	}
 public:
 	// testing functions:
