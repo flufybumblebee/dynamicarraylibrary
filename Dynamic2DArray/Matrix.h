@@ -218,18 +218,6 @@ public:
 		return out;
 	}
 
-	Matrix Transpose() const
-	{
-		Matrix result(nCols, nRows);
-		for (int i = 0; i < nRows; i++)
-		{
-			for (int j = 0; j < nCols; j++)
-			{
-				result.data[j][i] = data[i][j];
-			}
-		}
-		return result;
-	}
 	Matrix& Transpose()
 	{
 		Matrix temp(nCols, nRows);
