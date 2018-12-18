@@ -110,21 +110,28 @@ public:
 	}
 	static Matrix DotProduct(const Matrix& a, const Matrix& b)
 	{
-		assert(a.nRows == b.nCols);
-		Matrix temp = a;
-		for (int j = 0; j < temp.nRows; j++)
+		assert(a.nCols == b.nRows);
+		Matrix result( a.nRows, b.nCols );
+		for (int i = 0; i < a.nRows; i++)
 		{
-			for (int k = 0; k < temp.nCols; k++)
+			for (int j = 0; j < b.nCols; j++)
 			{
 				float sum = 0.0f;
-				for (int i = 0; i < b.nRows; i++)
+				for (int k = 0; k < a.nCols; k++)
 				{
-					sum += a.data[j][i] * b.data[i][k];
+					sum += a.data[i][k] * b.data[k][j];
 				}
-				temp.data[j][k] = sum;
+				result.data[i][j] = sum;
 			}
 		}
-		return temp;
+		return result;
+
+		/* 
+			notes:
+			always reading data from a as row matrix
+			always reading data from b as column matrix
+			always returns a row matrix
+		*/
 	}
 	// non-static functions (does alter the matrix)
 	Matrix& Add( const float& num)
