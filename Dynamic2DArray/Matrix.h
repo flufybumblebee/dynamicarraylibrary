@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <memory>
 #include "MathLibrary.h"
 
 class Matrix
@@ -83,7 +84,19 @@ public:
 		return *this;
 	}
 	
-	// static functions (doesn't alter the matrix passed in)
+	// static functions (the matrix or matrices passed in aren't altered )
+	static Matrix Transpose( const Matrix& m )
+	{
+		Matrix result(m.nCols, m.nRows);
+		for (int i = 0; i < m.nRows; i++)
+		{
+			for (int j = 0; j < m.nCols; j++)
+			{
+				result.data[j][i] = m.data[i][j];
+			}
+		}
+		return result;
+	}
 	static Matrix Add(const Matrix& in, const float& num)
 	{
 		Matrix out = in;
@@ -106,7 +119,7 @@ public:
 				out.data[i][j] *= num;
 			}
 		}
-		return out;
+		return std::move(out);
 	}
 	static Matrix DotProduct(const Matrix& a, const Matrix& b)
 	{
@@ -124,7 +137,7 @@ public:
 				result.data[i][j] = sum;
 			}
 		}
-		return result;
+		return std::move(result);
 
 		/* 
 			notes:
@@ -133,7 +146,19 @@ public:
 			always returns a row matrix
 		*/
 	}
-	// non-static functions (does alter the matrix)
+	// non-static functions (alters this matrix)
+	Matrix& Transpose()
+	{
+		Matrix temp(nCols, nRows);
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				temp.data[j][i] = data[i][j];
+			}
+		}
+		return *this = std::move(temp);
+	}
 	Matrix& Add( const float& num)
 	{
 		for (int i = 0; i < nRows; i++)
@@ -172,7 +197,7 @@ public:
 				temp.data[i][j] = sum;
 			}
 		}
-		return *this = temp;
+		return *this = std::move(temp);
 
 		/*
 			notes:
@@ -203,7 +228,7 @@ public:
 				out.data[i][j] += num;
 			}
 		}
-		return out;
+		return std::move(out);
 	}
 	Matrix operator * (const float num) const
 	{
@@ -215,33 +240,9 @@ public:
 				out.data[i][j] *= num;
 			}
 		}
-		return out;
+		return std::move(out);
 	}
 
-	Matrix& Transpose()
-	{
-		Matrix temp(nCols, nRows);
-		for (int i = 0; i < nRows; i++)
-		{
-			for (int j = 0; j < nCols; j++)
-			{
-				temp.data[j][i] = data[i][j];
-			}
-		}
-		return *this = temp;
-	}
-	static Matrix Transpose( const Matrix& m )
-	{
-		Matrix result(m.nCols, m.nRows);
-		for (int i = 0; i < m.nRows; i++)
-		{
-			for (int j = 0; j < m.nCols; j++)
-			{
-				result.data[j][i] = m.data[i][j];
-			}
-		}
-		return result;
-	}
 public:
 	// testing functions:
 	void Print() const
