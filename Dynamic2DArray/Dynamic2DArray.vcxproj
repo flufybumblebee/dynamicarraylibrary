@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClInclude Include="MathLibrary.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

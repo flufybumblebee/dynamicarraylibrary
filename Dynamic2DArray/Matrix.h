@@ -2,10 +2,16 @@
 
 #include <cassert>
 #include <memory>
+#include <array>
 #include "MathLibrary.h"
 
 class Matrix
 {
+public:
+	int nRows;
+	int nCols;
+
+	float** data = nullptr;
 public:
 	// constructors and destructors
 	Matrix() = default;
@@ -67,7 +73,7 @@ public:
 		{
 			for (int j = 0; j < nCols; j++)
 			{
-				data[i][j] = RandomFloat(min,max);
+				data[i][j] = RandomFloat(min, max);
 			}
 		}
 		return *this;
@@ -78,14 +84,14 @@ public:
 		{
 			for (int j = 0; j < nCols; j++)
 			{
-				data[i][j] = float( RandomInt(min, max) );
+				data[i][j] = float(RandomInt(min, max));
 			}
 		}
 		return *this;
 	}
-	
+
 	// static functions (the matrix or matrices passed in aren't altered )
-	static Matrix Transpose( const Matrix& m )
+	static Matrix Transpose(const Matrix& m)
 	{
 		Matrix result(m.nCols, m.nRows);
 		for (int i = 0; i < m.nRows; i++)
@@ -124,7 +130,7 @@ public:
 	static Matrix Multiply(const Matrix& a, const Matrix& b)
 	{
 		assert(a.nCols == b.nRows);
-		Matrix result( a.nRows, b.nCols );
+		Matrix result(a.nRows, b.nCols);
 		for (int i = 0; i < result.nRows; i++)
 		{
 			for (int j = 0; j < result.nCols; j++)
@@ -139,14 +145,14 @@ public:
 		}
 		return std::move(result);
 
-		/* 
+		/*
 			notes:
 			always reading data from a as row matrix
 			always reading data from b as column matrix
 			always returns a row matrix
 		*/
 	}
-	static Matrix Map( float (*pFunc)(float), const Matrix& in )
+	static Matrix Map(float(*pFunc)(float), const Matrix& in)
 	{
 		Matrix out = in;
 		for (int i = 0; i < out.nRows; i++)
@@ -172,7 +178,7 @@ public:
 		}
 		return *this = std::move(temp);
 	}
-	Matrix& Add( const float& num)
+	Matrix& Add(const float& num)
 	{
 		for (int i = 0; i < nRows; i++)
 		{
@@ -243,7 +249,7 @@ public:
 		}
 		return *this;
 	}
-	Matrix operator + ( const float num ) const
+	Matrix operator + (const float num) const
 	{
 		Matrix out = *this;
 		for (int i = 0; i < nRows; i++)
@@ -292,7 +298,42 @@ public:
 			always returns a row matrix
 		*/
 	}
-	
+	Matrix& operator += (const Matrix& in)
+	{
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				data[i][j] += in.data[i][j];
+			}
+		}
+		return *this;
+	}
+
+	static Matrix FromArray(std::vector<float> input_array)
+	{
+		Matrix output = Matrix(input_array.size(), 1);
+
+		for (size_t i = 0; i < input_array.size(); i++)
+		{
+			output.data[i][0] = input_array[i];
+		}
+		return std::move(output);
+	}
+
+	std::vector<float> ToArray()
+	{
+		std::vector<float> array_out;
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				array_out.push_back(data[i][j]);
+			}
+		}
+		return std::move(array_out);
+	}
+
 public:
 	// console testing functions:
 	void Print() const
@@ -317,10 +358,5 @@ public:
 			std::cout << std::endl;
 		}
 	}
-public:
-	const int nRows;
-	const int nCols;
-
-	float** data = nullptr;
 };
 

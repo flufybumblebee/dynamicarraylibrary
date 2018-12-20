@@ -32,3 +32,8 @@ inline int Sign(float num_in)
 	else				return -1;
 }
 
+inline float Sigmoid(float x)
+{
+	return 1.0f / (1.0f + std::expf(-x));
+}
+
