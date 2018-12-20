@@ -121,7 +121,7 @@ public:
 		}
 		return std::move(out);
 	}
-	static Matrix DotProduct(const Matrix& a, const Matrix& b)
+	static Matrix Multiply(const Matrix& a, const Matrix& b)
 	{
 		assert(a.nCols == b.nRows);
 		Matrix result( a.nRows, b.nCols );
@@ -145,6 +145,19 @@ public:
 			always reading data from b as column matrix
 			always returns a row matrix
 		*/
+	}
+	static Matrix Map( float (*pFunc)(float), const Matrix& in )
+	{
+		Matrix out = in;
+		for (int i = 0; i < out.nRows; i++)
+		{
+			for (int j = 0; j < out.nCols; j++)
+			{
+				auto var = out.data[i][j];
+				out.data[i][j] = pFunc(var);
+			}
+		}
+		return out;
 	}
 	// non-static functions (alters this matrix)
 	Matrix& Transpose()
@@ -181,7 +194,7 @@ public:
 		}
 		return *this;
 	}
-	Matrix& DotProduct(const Matrix& m)
+	Matrix& Multiply(const Matrix& m)
 	{
 		assert(nCols == m.nRows);
 		Matrix temp(nRows, m.nCols);
@@ -205,6 +218,18 @@ public:
 			always reading data from b as column matrix
 			always returns a row matrix
 		*/
+	}
+	Matrix& Map(float(*pFunc)(float))
+	{
+		for (int i = 0; i < nRows; i++)
+		{
+			for (int j = 0; j < nCols; j++)
+			{
+				auto var = data[i][j];
+				data[i][j] = pFunc(var);
+			}
+		}
+		return *this;
 	}
 	// operator overloading
 	Matrix& operator = (const Matrix& in)
@@ -242,9 +267,34 @@ public:
 		}
 		return std::move(out);
 	}
+	Matrix operator * (const Matrix& m) const
+	{
+		assert(nCols == m.nRows);
+		Matrix result(nRows, m.nCols);
+		for (int i = 0; i < result.nRows; i++)
+		{
+			for (int j = 0; j < result.nCols; j++)
+			{
+				float sum = 0.0f;
+				for (int k = 0; k < nCols; k++)
+				{
+					sum += data[i][k] * m.data[k][j];
+				}
+				result.data[i][j] = sum;
+			}
+		}
+		return std::move(result);
 
+		/*
+			notes:
+			always reading data from a as row matrix
+			always reading data from b as column matrix
+			always returns a row matrix
+		*/
+	}
+	
 public:
-	// testing functions:
+	// console testing functions:
 	void Print() const
 	{
 		for (int i = 0; i < nRows; i++)
