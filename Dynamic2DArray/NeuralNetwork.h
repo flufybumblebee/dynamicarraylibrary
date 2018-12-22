@@ -13,7 +13,7 @@ public:
 	Matrix weights_ho;
 	Matrix bias_h;
 	Matrix bias_o;
-	const float learning_rate = 0.1f;
+	const float learning_rate = 0.2f;
 
 public:
 	NeuralNetwork(
@@ -36,7 +36,7 @@ public:
 	}
 
 public:
-	std::vector<float> FeedForward(std::vector<float> input_array)
+	std::vector<float> Predict(std::vector<float> input_array)
 	{
 		// hidden weights
 		auto inputs = Matrix::FromArray(input_array);
@@ -61,10 +61,11 @@ public:
 		hidden.Map(Sigmoid);
 
 		// output weights
-		auto outputs = Matrix::Multiply(weights_ho, hidden);
+		auto outputs = weights_ho * hidden;
 		outputs += bias_o;
 		outputs.Map(Sigmoid);
 
+		// calculate output layer errors
 		auto answers = Matrix::FromArray(answers_array);
 		auto output_errors = answers - outputs;
 		
@@ -75,7 +76,7 @@ public:
 
 		// calculate deltas
 		auto hidden_t = Matrix::Transpose(hidden);
-		auto weight_ho_deltas = Matrix::Multiply(gradients,hidden_t);
+		auto weight_ho_deltas = gradients * hidden_t;
 		
 		// adjust weights by deltas
 		weights_ho.Add(weight_ho_deltas);
@@ -83,6 +84,7 @@ public:
 		// adjust the bias by its deltas (which is the gradients)
 		bias_o.Add(gradients);
 
+		// calculate hidden layer errors
 		auto weight_ho_t = Matrix::Transpose(weights_ho);
 		auto hidden_errors = weight_ho_t * output_errors;
 
@@ -93,7 +95,7 @@ public:
 
 		// calculate input to hidden deltas
 		auto inputs_t = Matrix::Transpose(inputs);
-		auto weights_ih_deltas = Matrix::Multiply(hidden_gradient, inputs_t);
+		auto weights_ih_deltas = hidden_gradient * inputs_t;
 
 		// adjust weights by deltas
 		weights_ih.Add(weights_ih_deltas);
