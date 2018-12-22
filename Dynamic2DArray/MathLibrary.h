@@ -37,3 +37,8 @@ inline float Sigmoid(float x)
 	return 1.0f / (1.0f + std::expf(-x));
 }
 
+inline float DSigmoid(float x)
+{
+	// return Sigmoid(x) * (1 - Sigmoid(x));
+	return x * (1.0f - x);
+}
