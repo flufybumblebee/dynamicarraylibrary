@@ -39,6 +39,8 @@ inline float Sigmoid(float x)
 
 inline float DSigmoid(float x)
 {
+	// actual sigmoid derivitive
 	// return Sigmoid(x) * (1 - Sigmoid(x));
+	// fake function because sigmoid is already implemented
 	return x * (1.0f - x);
 }
